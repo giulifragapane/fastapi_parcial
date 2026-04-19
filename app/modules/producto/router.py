@@ -1,0 +1,1 @@
+# Endpoints FastAPI del módulo Producto, usando el servicio para manejar la lógica de negocio

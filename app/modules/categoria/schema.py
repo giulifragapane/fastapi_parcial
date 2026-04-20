@@ -28,6 +28,8 @@ class CategoriaList(BaseModel):
     data: List[CategoriaRead]
     total: int
 
+"""
 class CategoriaReadDetalle(CategoriaRead):
     # Para endpoints que devuelven una categoría con sus subcategorías
     children: List["CategoriaRead"] = [] # falta algo acá??
+"""

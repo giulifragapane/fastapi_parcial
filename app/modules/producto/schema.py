@@ -22,8 +22,8 @@ class ProductoBase(BaseModel):
 
 # ── Entrada ───────────────────────────────────────────────────────────────────
 class ProductoCreate(ProductoBase):
-    categoria_ids: List[int] = []
-    ingrediente_ids: List[int] = []
+    categoria_ids: List[int] = Field(default_factory=list)
+    ingrediente_ids: List[int] = Field(default_factory=list)
 
 
 class ProductoUpdate(BaseModel):
@@ -40,11 +40,8 @@ class ProductoUpdate(BaseModel):
 class ProductoRead(ProductoBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
-
-
-class ProductoReadDetalle(ProductoRead):
-    categorias: List[CategoriaRead] = []
-    ingredientes: List[IngredienteRead] = []
+    categorias: List[CategoriaRead] = Field(default_factory=list)
+    ingredientes: List[IngredienteRead] = Field(default_factory=list)
 
 
 class IngredienteEnProducto(BaseModel):
@@ -52,3 +49,7 @@ class IngredienteEnProducto(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     nombre: str
+
+class ProductoList(BaseModel):
+    data: List[ProductoRead]
+    total: int

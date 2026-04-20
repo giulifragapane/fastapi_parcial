@@ -83,7 +83,7 @@ class CategoriaService:
                 detail=f"El nombre '{nombre}' ya está en uso",
             )
     # Esta funcion es un helper para validar que el parent_id referencie a una categoría existente, si es que se proporciona.
-    def _get_parent_or_404(self, uow: CategoriaUnitOfWork, parent_id: int):
+    def _get_parent_or_404(self, uow: CategoriaUnitOfWork, parent_id: int) -> Categoria:
         parent = uow.categorias.get_by_id(parent_id)
         if not parent:
             raise HTTPException(
@@ -164,7 +164,7 @@ class CategoriaService:
         """
         with CategoriaUnitOfWork(self._session) as uow:
             categorias = uow.categorias.get_all(offset=offset, limit=limit)
-            total = uow.categorias.count()
+            total = len(categorias)
 
             result = CategoriaList(
                 data=[CategoriaRead.model_validate(c) for c in categorias],
@@ -219,7 +219,12 @@ class CategoriaService:
 
             if data.parent_id is not None and data.parent_id != categoria.parent_id:
                 self._get_parent_or_404(uow, data.parent_id)
-
+            if data.parent_id == categoria_id:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Una categoría no puede ser padre de si misma.",
+                )
+            
             # Solo campos enviados por el cliente
             patch = data.model_dump(exclude_unset=True)
 
@@ -278,6 +283,12 @@ class CategoriaService:
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="No se puede eliminar una categoría que tiene subcategorías asociadas"
             )
+            categoria = self._get_or_404(uow, categoria_id)
+            if categoria.productos:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="No se puede eliminar una categoría asociada a uno o más productos."
+                )
             categoria = self._get_or_404(uow, categoria_id)
             categoria.deleted_at = uow.now
             categoria.updated_at = uow.now

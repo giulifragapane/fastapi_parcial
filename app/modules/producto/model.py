@@ -25,11 +25,8 @@ class ProductoCategoria(SQLModel, table=True):
     categoria_id: int = Field(foreign_key="categorias.id", primary_key=True)
     es_principal: bool = Field(default=False, nullable=False)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc),nullable=False)
-    # y el created_at de donde lo saco????????????????????????
 
-    # Relaciones
-   # producto: Optional["Producto"] = Relationship(back_populates="producto_categorias")
-    #categoria: Optional["Categoria"] = Relationship(back_populates="producto_categorias")
+
 # ──────────────────────────────────────────────
 # Tabla link N:N  Producto ↔ Ingrediente (con campos extra)
 # ──────────────────────────────────────────────
@@ -41,9 +38,6 @@ class ProductoIngrediente(SQLModel, table=True):
     ingrediente_id: int = Field(foreign_key="ingredientes.id", primary_key=True)
     es_removible: bool = Field(default=False, nullable=False)
 
-      # Relaciones
-    #producto: Optional["Producto"] = Relationship(back_populates="producto_ingredientes")
-    #ingrediente: Optional["Ingrediente"] = Relationship(back_populates="producto_ingredientes")
     
 # ──────────────────────────────────────────────
 # Modelo principal

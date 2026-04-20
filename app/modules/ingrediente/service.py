@@ -127,7 +127,7 @@ class IngredienteService:
         """
         with IngredienteUnitOfWork(self._session) as uow:
             ingredientes = uow.ingredientes.get_all(offset=offset, limit=limit)
-            total = uow.ingredientes.count()
+            total = len(ingredientes)
 
             result = IngredienteList(
                 data=[IngredienteRead.model_validate(c) for c in ingredientes],
@@ -141,7 +141,7 @@ class IngredienteService:
  
         with IngredienteUnitOfWork(self._session) as uow:
             ingredientes = uow.ingredientes.get_alergenos(offset=offset, limit=limit)
-            total = uow.ingredientes.count()
+            total = len(ingredientes)
 
             result = IngredienteList(
                 data=[IngredienteRead.model_validate(c) for c in ingredientes],
@@ -247,6 +247,11 @@ class IngredienteService:
         """
         with IngredienteUnitOfWork(self._session) as uow:
             ingrediente = self._get_or_404(uow, ingrediente_id)
+            if ingrediente.productos:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="No se puede eliminar un ingrediente asociado a uno o más productos."
+                )
             ingrediente.deleted_at = uow.now
             ingrediente.updated_at = uow.now
             uow.ingredientes.add(ingrediente)

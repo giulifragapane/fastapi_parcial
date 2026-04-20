@@ -1,12 +1,9 @@
 # app/main.py
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from sqlmodel import SQLModel
 from app.core.database import create_db_and_tables
-from app.modules.categoria.model import Categoria
-from app.modules.producto.model import Producto
-from app.modules.ingrediente.model import Ingrediente
 from app.modules.categoria.router import router as categoria_router
+from app.modules.ingrediente.router import router as ingrediente_router
 """
 ---ES EL PUNTO DE ENTRADA DE LA APLICACIÓN---
 - Aquí se crea la instancia de FastAPI, se configura el lifespan (ciclo de vida) de la aplicación, 
@@ -27,3 +24,4 @@ app = FastAPI(
 )
 
 app.include_router(categoria_router)
+app.include_router(ingrediente_router)

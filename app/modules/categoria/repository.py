@@ -1,5 +1,6 @@
 # app/modules/categoria/repository.py
 from sqlmodel import select, Session
+from sqlalchemy import func
 from app.core.repository import BaseRepository
 from app.modules.categoria.model import Categoria
 
@@ -52,6 +53,11 @@ class CategoriaRepository(BaseRepository[Categoria]):
 
         Returns:
             int: Total de registros en la tabla Categoria.
-        """
         return len(self.session.exec(select(Categoria)).all())
+        """
+        return self.session.exec(
+            select(func.count())
+            .select_from(Categoria)
+            .where(Categoria.deleted_at.is_(None))
+        ).one()
   

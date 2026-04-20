@@ -229,6 +229,7 @@ class CategoriaService:
             result = CategoriaRead.model_validate(categoria)
 
         return result
+
     
     def soft_delete(self, categoria_id: int) -> None:
         """
@@ -256,3 +257,12 @@ class CategoriaService:
             categoria.deleted_at = uow.now
             categoria.updated_at = uow.now
             uow.categorias.add(categoria)
+
+    def count(self) -> int:
+        """
+        Cuenta la cantidad total de categorias.
+
+        Returns:
+            int: Total de registros en la tabla Categoria.
+        """
+        return len(self.session.exec(select(Ingrediente)).all())

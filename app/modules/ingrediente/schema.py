@@ -22,3 +22,7 @@ class IngredienteUpdate(BaseModel):
 class IngredienteRead(IngredienteBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
+
+class IngredienteList(BaseModel):
+    data: List[IngredienteRead]
+    total: int

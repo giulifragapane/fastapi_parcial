@@ -66,7 +66,7 @@ class BaseRepository(Generic[ModelT]):
             No lanza excepciones. El manejo de "no encontrado" debe hacerse en la capa de servicio.
         """
         return self.session.get(self.model, record_id)
-
+    
     def get_all(self, offset: int = 0, limit: int = 20) -> Sequence[ModelT]:
         """
         Obtiene una lista paginada de entidades.
@@ -83,6 +83,24 @@ class BaseRepository(Generic[ModelT]):
         """
         return self.session.exec(
             select(self.model).offset(offset).limit(limit)
+        ).all()
+    
+    def get_active(self, offset: int = 0, limit: int = 20) -> Sequence[ModelT]:
+        """
+            Obtiene registros activos (no eliminados lógicamente).
+
+        Args:
+            offset (int): Registros a omitir.
+            limit (int): Máximo de registros a devolver.
+
+        Returns:
+            Sequence[ModelT]: Lista de entidades activas.
+        """
+        return self.session.exec(
+            select(self.model)
+            .where(self.model.deleted_at.is_(None))
+            .offset(offset)
+            .limit(limit)
         ).all()
 
     def add(self, instance: ModelT) -> ModelT:

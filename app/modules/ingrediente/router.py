@@ -42,6 +42,20 @@ def list_ingredientes(
     limit: Annotated[int, Query(ge=1, le=100, description="Cantidad máxima de registros")] = 20,
     svc: IngredienteService = Depends(get_ingrediente_service),
 ) -> IngredienteList:
+    return svc.get_all_active(offset=offset, limit=limit)
+
+# GET ALL Active + NO Active (Annotated + Query)
+@router.get(
+    "/all/",
+    response_model=IngredienteList,
+    summary="Listar todos los ingredientes",
+)
+
+def list_ingredientes_all(
+    offset: Annotated[int, Query(ge=0, description="Cantidad de registros a omitir")] = 0,
+    limit: Annotated[int, Query(ge=1, le=100, description="Cantidad máxima de registros")] = 20,
+    svc: IngredienteService = Depends(get_ingrediente_service),
+) -> IngredienteList:
     return svc.get_all(offset=offset, limit=limit)
 
 # GET BY ID

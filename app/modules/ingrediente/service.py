@@ -86,7 +86,7 @@ class IngredienteService:
         return result
 
 
-    def get_all(self, offset: int = 0, limit: int = 20) -> IngredienteList:
+    def get_all_active(self, offset: int = 0, limit: int = 20) -> IngredienteList:
         """
         Obtiene lista paginada de héroes activos.
 
@@ -110,6 +110,32 @@ class IngredienteService:
             )
 
         return result
+    
+    def get_all(self, offset: int = 0, limit: int = 20) -> IngredienteList:
+        """
+        Obtiene lista paginada de todos los ingredientes.
+
+        Args:
+            offset (int): Desplazamiento.
+            limit (int): Límite de resultados.
+
+        Returns:
+            CategoriaList: DTO con lista de categorías y total.
+
+        Nota:
+            El total se calcula con una query separada.
+        """
+        with IngredienteUnitOfWork(self._session) as uow:
+            ingredientes = uow.ingredientes.get_all(offset=offset, limit=limit)
+            total = uow.ingredientes.count()
+
+            result = IngredienteList(
+                data=[IngredienteRead.model_validate(c) for c in ingredientes],
+                total=total,
+            )
+
+        return result
+
 
     def get_alergenos(self, offset: int = 0, limit: int = 20) -> IngredienteList:
  

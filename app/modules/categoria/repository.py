@@ -23,30 +23,6 @@ class CategoriaRepository(BaseRepository[Categoria]):
             select(Categoria).where(Categoria.nombre == nombre)
     ).first()
 
-    def get_active(self, offset: int = 0, limit: int = 20) -> list[Categoria]:
-        """
-        Obtiene categorías activas con paginación.
-
-        Args:
-            offset (int): Cantidad de registros a omitir.
-            limit (int): Máximo de registros a devolver.
-
-        Returns:
-            list[Categoria]: Lista de categorías activas.
-
-        Nota:
-            - No se define orden explícito → resultados no determinísticos
-            - Se usa '== True' por limitaciones del ORM (evita warnings de estilo)
-        """
-        return list(
-            self.session.exec(
-                select(Categoria)
-                .where(Categoria.deleted_at.is_(None))  # noqa: E712
-                .offset(offset)
-                .limit(limit)
-            ).all()
-        )
-
     def count(self) -> int:
         """
         Cuenta la cantidad total de categorias.

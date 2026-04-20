@@ -123,7 +123,7 @@ class CategoriaService:
         return result
 
 
-    def get_all(self, offset: int = 0, limit: int = 20) -> CategoriaList:
+    def get_all_active(self, offset: int = 0, limit: int = 20) -> CategoriaList:
         """
         Obtiene lista paginada de héroes activos.
 
@@ -139,6 +139,31 @@ class CategoriaService:
         """
         with CategoriaUnitOfWork(self._session) as uow:
             categorias = uow.categorias.get_active(offset=offset, limit=limit)
+            total = uow.categorias.count()
+
+            result = CategoriaList(
+                data=[CategoriaRead.model_validate(c) for c in categorias],
+                total=total,
+            )
+
+        return result
+    
+    def get_all(self, offset: int = 0, limit: int = 20) -> CategoriaList:
+        """
+        Obtiene lista paginada de héroes activos.
+
+        Args:
+            offset (int): Desplazamiento.
+            limit (int): Límite de resultados.
+
+        Returns:
+            CategoriaList: DTO con lista de categorías y total.
+
+        Nota:
+            El total se calcula con una query separada.
+        """
+        with CategoriaUnitOfWork(self._session) as uow:
+            categorias = uow.categorias.get_all(offset=offset, limit=limit)
             total = uow.categorias.count()
 
             result = CategoriaList(
@@ -257,12 +282,3 @@ class CategoriaService:
             categoria.deleted_at = uow.now
             categoria.updated_at = uow.now
             uow.categorias.add(categoria)
-
-    def count(self) -> int:
-        """
-        Cuenta la cantidad total de categorias.
-
-        Returns:
-            int: Total de registros en la tabla Categoria.
-        """
-        return len(self.session.exec(select(Ingrediente)).all())

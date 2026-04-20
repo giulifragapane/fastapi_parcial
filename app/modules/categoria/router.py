@@ -31,13 +31,27 @@ def create_categoria(
     """Router delega al servicio — sin lógica de negocio aquí."""
     return svc.create(data)
 
-# GET ALL (Annotated + Query)
+# GET ALL Active (Annotated + Query)
 @router.get(
     "/",
     response_model=CategoriaList,
     summary="Listar categorías activas (paginado)",
 )
 def list_categorias(
+    offset: Annotated[int, Query(ge=0, description="Cantidad de registros a omitir")] = 0,
+    limit: Annotated[int, Query(ge=1, le=100, description="Cantidad máxima de registros")] = 20,
+    svc: CategoriaService = Depends(get_categoria_service),
+) -> CategoriaList:
+    return svc.get_all_active(offset=offset, limit=limit)
+
+# GET ALL Active + NO Active (Annotated + Query)
+@router.get(
+    "/all/",
+    response_model=CategoriaList,
+    summary="Listar todas las categorias",
+)
+
+def list_categorias_all(
     offset: Annotated[int, Query(ge=0, description="Cantidad de registros a omitir")] = 0,
     limit: Annotated[int, Query(ge=1, le=100, description="Cantidad máxima de registros")] = 20,
     svc: CategoriaService = Depends(get_categoria_service),

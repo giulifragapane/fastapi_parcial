@@ -26,6 +26,10 @@ class ProductoCategoria(SQLModel, table=True):
     es_principal: bool = Field(default=False, nullable=False)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc),nullable=False)
 
+    # ANTES NO TENIA ESTO - LO AGREGUÉ POST CLASE -----------------#$%%$##$$#$$##$%%&&%$####
+    producto: Optional["Producto"] = Relationship(back_populates="categorias")
+    categoria: Optional["Categoria"] = Relationship(back_populates="productos")
+
 
 # ──────────────────────────────────────────────
 # Tabla link N:N  Producto ↔ Ingrediente (con campos extra)
@@ -37,6 +41,9 @@ class ProductoIngrediente(SQLModel, table=True):
     producto_id: int = Field(foreign_key="productos.id", primary_key=True)
     ingrediente_id: int = Field(foreign_key="ingredientes.id", primary_key=True)
     es_removible: bool = Field(default=False, nullable=False)
+    # ANTES NO TENIA ESTO - LO AGREGUÉ POST CLASE -----------------#$%%$##$$#$$##$%%&&%$####
+    producto: Optional["Producto"] = Relationship(back_populates="ingredientes")
+    ingrediente: Optional["Ingrediente"] = Relationship(back_populates="productos")
 
     
 # ──────────────────────────────────────────────
@@ -54,7 +61,8 @@ class Producto(Base, table=True):
     stock_cantidad: int = Field(default=0, ge=0, nullable=False)
     disponible: bool = Field(default=True, nullable=False)
 
-    # ── Relaciones ──────────────────────────────
+    # ── Relaciones ────────────────────────────    # LO QUITÉ -----------------#$%%$##$$#$$##$%%&&%$####
+    """ VISTO CON PROFE
     categorias: List["Categoria"] = Relationship(
         back_populates="productos",
         link_model=ProductoCategoria
@@ -63,3 +71,10 @@ class Producto(Base, table=True):
         back_populates="productos",
         link_model=ProductoIngrediente
     )
+    """
+    # -----------------------------------AGREGUÉ ----------------------------------------#$%%$##$$#$$##$%%&&%$####
+    # Relación N:N con Categoria a través de ProductoCategoria
+    categorias: List["ProductoCategoria"] = Relationship(back_populates="producto")
+
+    # Relación N:N con Ingrediente a través de ProductoIngrediente
+    ingredientes: List["ProductoIngrediente"] = Relationship(back_populates="producto")

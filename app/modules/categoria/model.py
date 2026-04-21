@@ -4,13 +4,13 @@ from sqlmodel import Field, Relationship
 from sqlalchemy import BigInteger, Column, ForeignKey
 
 from app.core.base import Base
-from app.modules.producto.model import ProductoCategoria
 
 # Contiene SOLO el modelo de tabla SQLModel de Categoría.
 # Los schemas Pydantic de entrada/salida viven en schemas.py.
 
 if TYPE_CHECKING:
-    from app.modules.producto.model import Producto
+    #from app.modules.producto.model import Producto -------------ANTES -----------$$$$##%&&&&&&&&%$$$
+    from app.modules.producto.model import ProductoCategoria
 
 # Define la tabla SQLModel con table=True para que se cree en la base de datos
 class Categoria(Base, table=True):
@@ -40,9 +40,12 @@ class Categoria(Base, table=True):
         back_populates="parent"
     )
 
-    # Relación N:N con Producto inversa
+    # Relación N:N con Producto inversa ------------------------ANTES -----------$$$$##%&&&&&&&&%$$$
+    """
     productos: List["Producto"] = Relationship(
         back_populates="categorias",
         link_model=ProductoCategoria,
     )
-
+    """
+    #------------------------AGREGUÉ -----------$$$$##%&&&&&&&&%$$$
+    productos: list["ProductoCategoria"] = Relationship(back_populates="categoria")

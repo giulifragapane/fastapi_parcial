@@ -88,7 +88,7 @@ class CategoriaService:
         if not parent:
             raise HTTPException(
                 status_code=404,
-                detail=f"Categoría con id={parent_id} no encontrada"
+                detail=f"Categoría con id={parent_id} no encontrada."
             )
         return parent
 
@@ -164,7 +164,7 @@ class CategoriaService:
         """
         with CategoriaUnitOfWork(self._session) as uow:
             categorias = uow.categorias.get_all(offset=offset, limit=limit)
-            total = len(categorias)
+            total = len(categorias) #Cantidad por página
 
             result = CategoriaList(
                 data=[CategoriaRead.model_validate(c) for c in categorias],
@@ -219,6 +219,7 @@ class CategoriaService:
 
             if data.parent_id is not None and data.parent_id != categoria.parent_id:
                 self._get_parent_or_404(uow, data.parent_id)
+                
             if data.parent_id == categoria_id:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -236,6 +237,7 @@ class CategoriaService:
             result = CategoriaRead.model_validate(categoria)
 
         return result
+    
     def  get_by_nombre(self, nombre: str) -> CategoriaRead:
         """
         Busca una categoría por su nombre.
@@ -254,7 +256,7 @@ class CategoriaService:
             if not categoria:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Categoría con nombre='{nombre}' no encontrada",
+                    detail=f"Categoría con nombre='{nombre}' no encontrada.",
                 )
             result = CategoriaRead.model_validate(categoria)
 
@@ -281,7 +283,7 @@ class CategoriaService:
             if subcategorias:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="No se puede eliminar una categoría que tiene subcategorías asociadas"
+                    detail="No se puede eliminar una categoría que tiene subcategorías asociadas."
             )
             categoria = self._get_or_404(uow, categoria_id)
             if categoria.productos:

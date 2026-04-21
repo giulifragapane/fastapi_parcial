@@ -19,7 +19,7 @@ class ProductoRepository(BaseRepository[Producto]):
 
     def count(self) -> int:
         """
-        Cuenta la cantidad total de ingredientes.
+        Cuenta la cantidad total de productos.
         Returns:
             int: Total de registros en la tabla Producto.
         return len(self.session.exec(select(Producto)).all())
@@ -29,4 +29,3 @@ class ProductoRepository(BaseRepository[Producto]):
             .select_from(Producto)
             .where(Producto.deleted_at.is_(None))
         ).one()
-  

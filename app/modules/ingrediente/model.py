@@ -6,7 +6,8 @@ from app.core.base import Base
 from app.modules.producto.model import ProductoIngrediente
 
 if TYPE_CHECKING:
-    from app.modules.producto.model import Producto
+    #from app.modules.producto.model import ProductoIngrediente ------------ ANTES-------------------- #$%$#"""##$$$#$%%$$###"
+    from app.modules.producto.model import ProductoIngrediente
 
 class Ingrediente(Base, table=True):
     __tablename__ = "ingredientes"
@@ -14,10 +15,12 @@ class Ingrediente(Base, table=True):
     nombre: str = Field(max_length=100, unique=True, nullable=False)
     descripcion: str = Field(nullable=False)
     es_alergeno: bool = Field(default=False, nullable=False)
-
+    """ ANTES ----------------------------------"#$#$$%$$$#$$$#$$$$$$####$$$$$$$$$$####
     # ── Relaciones inversa ───────────────────────
     productos: List["Producto"] = Relationship(
         back_populates="ingredientes",
         link_model=ProductoIngrediente
     )
+    """
+    productos: List["ProductoIngrediente"] = Relationship(back_populates="ingrediente")
 

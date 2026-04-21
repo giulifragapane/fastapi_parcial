@@ -38,6 +38,10 @@ class UnitOfWork:
         """
         self._session = session
         self.now = datetime.now(timezone.utc) #timestamp común para created_at, updated_at, deleted_at
+    #------------------nuevo------------------------------------
+    @property
+    def session(self) -> Session:
+        return self._session
 
     def __enter__(self) -> "UnitOfWork":
         """

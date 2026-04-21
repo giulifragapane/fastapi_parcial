@@ -43,7 +43,7 @@ def list_productos(
     limit: Annotated[int, Query(ge=1, le=100, description="Máximo de registros")] = 20,
     svc: ProductoService = Depends(get_producto_service),
 ) -> ProductoList:
-    return svc.get_all(offset=offset, limit=limit)
+    return svc.get_all_active(offset=offset, limit=limit)
 
 # GET ALL Active + NO Active (Annotated + Query)
 @router.get(

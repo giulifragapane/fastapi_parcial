@@ -250,8 +250,8 @@ class ProductoService:
             result = ProductoRead.model_validate(producto)
 
         return result
-    
-    # Revisar-----------------------------------
+    """
+    # Revisar----------------VIEJOOOOO MÉTODOOOO (ABAJO ESTÁ EL QUE SE USA)----------------------------
     def update(self, producto_id: int, data: ProductoUpdate) -> ProductoRead:
     
         with ProductoUnitOfWork(self._session) as uow:
@@ -269,9 +269,83 @@ class ProductoService:
             for field, value in patch.items():
                 setattr(producto, field, value)
 
-
             producto.updated_at = uow.now
             uow.productos.add(producto)
+            result = ProductoRead.model_validate(producto)
+
+        return result
+    """
+
+        # Revisar-----------------------------------
+    def update(self, producto_id: int, data: ProductoUpdate) -> ProductoRead:
+    
+        with ProductoUnitOfWork(self._session) as uow:
+            producto = self._get_or_404(uow, producto_id)
+
+            if data.nombre and data.nombre != producto.nombre:
+                self._assert_nombre_unique(uow, data.nombre)
+
+            # Solo campos enviados por el cliente
+            # patch = data.model_dump(exclude_unset=True)  ------------------------ CAAAMBIO AQUÍ-----------------
+            patch = data.model_dump(exclude_unset=True, exclude={"categorias", "ingredientes"})
+            # ANTES:
+            # Solo campos enviados por el cliente
+            #patch = data.model_dump(exclude_unset=True)
+            for field, value in patch.items():
+                setattr(producto, field, value)
+                    # Categorías — None = no tocar, [] = borrar todas, [items] = reemplazar
+            if data.categorias is not None:
+                for pc in list(producto.categorias):   # list() para iterar copia segura mientras se modifica
+                    uow.session.delete(pc)
+                uow.session.flush()   
+
+                for cat in data.categorias:
+                    categoria = uow.categorias.get_by_id(cat.categoria_id)
+                    if not categoria:
+                        raise HTTPException(
+                            status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Categoría con id={cat.categoria_id} no encontrada"
+                        )
+                    if categoria.deleted_at is not None:
+                        raise HTTPException(
+                            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                            detail=f"La categoría con id={cat.categoria_id} está dada de baja"
+                        )
+                    producto.categorias.append(
+                        ProductoCategoria(
+                            producto=producto,
+                            categoria=categoria,
+                            es_principal=cat.es_principal
+                        )
+                    )
+
+        # Ingredientes — None = no tocar, [] = borrar todos, [items] = reemplazar
+            if data.ingredientes is not None:
+                for pi in list(producto.ingredientes):
+                    uow.session.delete(pi)
+                uow.session.flush()
+
+                for ing in data.ingredientes:
+                    ingrediente = uow.ingredientes.get_by_id(ing.ingrediente_id)
+                    if not ingrediente:
+                        raise HTTPException(
+                            status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Ingrediente con id={ing.ingrediente_id} no encontrado"
+                        )
+                    if ingrediente.deleted_at is not None:
+                        raise HTTPException(
+                            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                            detail=f"El ingrediente con id={ing.ingrediente_id} está dado de baja"
+                        )
+                    producto.ingredientes.append(
+                        ProductoIngrediente(
+                            producto=producto,
+                            ingrediente=ingrediente,
+                            es_removible=ing.es_removible
+                        )
+                    )
+            producto.updated_at = uow.now
+            #uow.productos.add(producto)
             result = ProductoRead.model_validate(producto)
 
         return result

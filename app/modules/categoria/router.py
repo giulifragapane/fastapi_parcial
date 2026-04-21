@@ -58,17 +58,6 @@ def list_categorias_all(
 ) -> CategoriaList:
     return svc.get_all(offset=offset, limit=limit)
 
-# GET BY ID
-@router.get(
-    "/{categoria_id}",
-    response_model=CategoriaRead,
-    summary="Obtener categoría por ID",
-)
-def get_categoria(
-    categoria_id: int,
-    svc: CategoriaService = Depends(get_categoria_service),
-) -> CategoriaRead:
-    return svc.get_by_id(categoria_id)
 
 # GET por nombre
 @router.get(
@@ -82,6 +71,20 @@ def search_categoria_by_nombre(
 ) -> CategoriaRead:
     return svc.get_by_nombre(nombre)
 
+
+# GET BY ID
+@router.get(
+    "/{categoria_id}",
+    response_model=CategoriaRead,
+    summary="Obtener categoría por ID",
+)
+def get_categoria(
+    categoria_id: int,
+    svc: CategoriaService = Depends(get_categoria_service),
+) -> CategoriaRead:
+    return svc.get_by_id(categoria_id)
+
+
 # UPDATE (PATCH) 
 @router.patch(
     "/{categoria_id}",
@@ -94,6 +97,7 @@ def update_categoria(
     svc: CategoriaService = Depends(get_categoria_service),
 ) -> CategoriaRead:
     return svc.update(categoria_id, data)
+
 
 # DELETE (soft delete)
 @router.delete(

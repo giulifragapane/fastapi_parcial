@@ -31,6 +31,7 @@ def create_ingrediente(
     """Router delega al servicio — sin lógica de negocio aquí."""
     return svc.create(data)
 
+
 # GET ALL (Annotated + Query)
 @router.get(
     "/",
@@ -43,6 +44,7 @@ def list_ingredientes(
     svc: IngredienteService = Depends(get_ingrediente_service),
 ) -> IngredienteList:
     return svc.get_all_active(offset=offset, limit=limit)
+
 
 # GET ALL Active + NO Active (Annotated + Query)
 @router.get(
@@ -58,17 +60,6 @@ def list_ingredientes_all(
 ) -> IngredienteList:
     return svc.get_all(offset=offset, limit=limit)
 
-# GET BY ID
-@router.get(
-    "/{ingrediente_id}",
-    response_model=IngredienteRead,
-    summary="Obtener ingrediente por ID",
-)
-def get_ingrediente(
-    ingrediente_id: int,
-    svc: IngredienteService = Depends(get_ingrediente_service),
-) -> IngredienteRead:
-    return svc.get_by_id(ingrediente_id)
 
 # GET por nombre
 @router.get(
@@ -81,6 +72,7 @@ def search_ingrediente_by_nombre(
     svc: IngredienteService = Depends(get_ingrediente_service),
 ) -> IngredienteRead:
     return svc.get_by_nombre(nombre)
+
 
 # GET ALL alergenos
 @router.get(
@@ -96,6 +88,20 @@ def list_alergenos(
     return svc.get_alergenos(offset=offset, limit=limit)
 
 
+# GET BY ID
+@router.get(
+    "/{ingrediente_id}",
+    response_model=IngredienteRead,
+    summary="Obtener ingrediente por ID",
+)
+def get_ingrediente(
+    ingrediente_id: int,
+    svc: IngredienteService = Depends(get_ingrediente_service),
+) -> IngredienteRead:
+    return svc.get_by_id(ingrediente_id)
+
+
+
 # UPDATE (PATCH) 
 @router.patch(
     "/{ingrediente_id}",
@@ -108,6 +114,8 @@ def update_ingrediente(
     svc: IngredienteService = Depends(get_ingrediente_service),
 ) -> IngredienteRead:
     return svc.update(ingrediente_id, data)
+
+
 
 # DELETE (soft delete)
 @router.delete(

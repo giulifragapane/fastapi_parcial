@@ -217,8 +217,14 @@ class CategoriaService:
             if data.nombre and data.nombre != categoria.nombre:
                 self._assert_nombre_unique(uow, data.nombre)
 
-            if data.parent_id is not None and data.parent_id != categoria.parent_id:
-                self._get_parent_or_404(uow, data.parent_id)
+            if data.parent_id is not None:
+                if data.parent_id == categoria_id:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Una categoría no puede ser padre de si misma.",
+                )
+                if data.parent_id != categoria.parent_id:
+                    self._get_parent_or_404(uow, data.parent_id)
                 
             if data.parent_id == categoria_id:
                 raise HTTPException(
